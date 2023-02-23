@@ -1,13 +1,13 @@
-package ar.com.api.ApiDemo;
+package ar.com.api.assetPlatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiDemoApplication {
+public class AssetPlatformApiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ApiDemoApplication.class, args);
+		SpringApplication.run(AssetPlatformApiApplication.class, args);
 	}
 
 }
