@@ -1,4 +1,4 @@
-package ar.com.api.ApiDemo.exception;
+package ar.com.api.assetPlatform.exception;
 
 import lombok.NoArgsConstructor;
 

@@ -1,4 +1,4 @@
-package ar.com.api.ApiDemo.dto;
+package ar.com.api.assetPlatform.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

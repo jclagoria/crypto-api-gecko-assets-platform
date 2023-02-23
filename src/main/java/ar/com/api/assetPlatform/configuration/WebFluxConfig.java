@@ -1,4 +1,4 @@
-package ar.com.api.ApiDemo.configuration;
+package ar.com.api.assetPlatform.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
