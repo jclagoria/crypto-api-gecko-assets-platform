@@ -16,21 +16,8 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @Slf4j
 public class AssetPlatformApiHandler {
- 
- private CoinGeckoServiceStatus serviceStatus;
 
  private AssetPlatformService serviceAssetPlatform;
-
- public Mono<ServerResponse> getStatusServiceCoinGecko(ServerRequest serverRequest) {
-
-     log.info("In getStatusServiceCoinGecko");
-
-     return ServerResponse
-                    .ok()
-                    .body(
-                         serviceStatus.getStatusCoinGeckoService(), 
-                         Ping.class);
- }
 
  public Mono<ServerResponse> getAssertPlatformCoinGecko(ServerRequest sRequest){
      log.info("In getAssertPlatformCoinGecko");
