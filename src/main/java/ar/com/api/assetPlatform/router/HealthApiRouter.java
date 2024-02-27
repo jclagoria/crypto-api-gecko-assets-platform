@@ -1,6 +1,6 @@
 package ar.com.api.assetPlatform.router;
 
-import ar.com.api.assetPlatform.handler.HealtCoinGeckoApiHandler;
+import ar.com.api.assetPlatform.handler.HealthCoinGeckoApiHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ public class HealthApiRouter {
     private String URL_HEALTH_GECKO_API;
 
     @Bean
-    public RouterFunction<ServerResponse> routeHealth(HealtCoinGeckoApiHandler handler) {
+    public RouterFunction<ServerResponse> routeHealth(HealthCoinGeckoApiHandler handler) {
 
         return RouterFunctions
                 .route()

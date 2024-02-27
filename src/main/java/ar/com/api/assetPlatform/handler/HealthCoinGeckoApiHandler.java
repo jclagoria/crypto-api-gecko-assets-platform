@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Component
 @AllArgsConstructor
 @Slf4j
-public class HealtCoinGeckoApiHandler {
+public class HealthCoinGeckoApiHandler {
 
     private CoinGeckoServiceStatus serviceStatus;
 
