@@ -1,49 +1,31 @@
 package ar.com.api.assetPlatform.services;
 
-import ar.com.api.assetPlatform.exception.ManageExceptionCoinGeckoServiceApi;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
+import ar.com.api.assetPlatform.configuration.ExternalServerConfig;
+import ar.com.api.assetPlatform.configuration.HttpServiceCall;
 import ar.com.api.assetPlatform.model.Ping;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-public class CoinGeckoServiceStatus extends CoinGeckoServiceApi {
- 
- @Value("${api.ping}")
- private String URL_PING_SERVICE;
+public class CoinGeckoServiceStatus {
 
- private WebClient webClient;
+    private final HttpServiceCall httpServiceCall;
 
- public CoinGeckoServiceStatus(WebClient webClient) {
-  this.webClient = webClient;
- }
+    private final ExternalServerConfig externalServerConfig;
 
- public Mono<Ping> getStatusCoinGeckoService() {
-  
-  log.info("Calling method: ", URL_PING_SERVICE); 
+    public CoinGeckoServiceStatus(HttpServiceCall serviceCall,
+                                  ExternalServerConfig serverConfig) {
+        this.httpServiceCall = serviceCall;
+        this.externalServerConfig = serverConfig;
+    }
 
-  return webClient
-          .get()
-          .uri(URL_PING_SERVICE)
-          .retrieve()
-          .onStatus(
-                  HttpStatusCode::is4xxClientError,
-                  getClientResponseMonoDataException()
-          )
-          .onStatus(
-                  HttpStatusCode::is5xxServerError,
-                  getClientResponseMonoServerException()
-          )
-          .bodyToMono(Ping.class)
-          .doOnError(
-                  ManageExceptionCoinGeckoServiceApi::throwServiceException
-          );
- }
+    public Mono<Ping> getStatusCoinGeckoService() {
+
+        log.info("Calling method: {}", externalServerConfig.getPing());
+
+        return httpServiceCall.getMonoObject(externalServerConfig.getPing(), Ping.class);
+    }
 
 }
