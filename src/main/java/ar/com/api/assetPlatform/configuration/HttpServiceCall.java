@@ -2,7 +2,9 @@ package ar.com.api.assetPlatform.configuration;
 
 import ar.com.api.assetPlatform.enums.ErrorTypeEnum;
 import ar.com.api.assetPlatform.exception.ApiServerErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -11,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class HttpServiceCall {
 
     private final WebClient webClient;
@@ -21,11 +24,7 @@ public class HttpServiceCall {
 
     private <T> Mono<T> handleError(Throwable e) {
 
-        if (e instanceof ApiServerErrorException) {
-            return Mono.error(e);
-        }
-
-        return Mono.error(new Exception("General Error", e));
+        return Mono.error(e instanceof ApiServerErrorException ? e : new Exception("General Error", e));
     }
 
     private Mono<ApiServerErrorException> handleResponseError(Map<String, Object> errorMessage,
@@ -36,45 +35,36 @@ public class HttpServiceCall {
     }
 
     public <T> Mono<T> getMonoObject(String urlEndPoint, Class<T> responseType) {
-        return webClient.get()
-                .uri(urlEndPoint)
-                .retrieve()
-                .onStatus(
-                        status -> status.is4xxClientError(),
-                        response -> response.bodyToMono(Map.class)
-                                .flatMap(errorMessage -> handleResponseError(errorMessage,
-                                        (HttpStatus) response.statusCode(),
-                                        ErrorTypeEnum.GECKO_CLIENT_ERROR))
-                )
-                .onStatus(
-                        status -> status.is5xxServerError(),
-                        response -> response.bodyToMono(Map.class)
-                                .flatMap(errorMessage -> handleResponseError(errorMessage,
-                                        (HttpStatus) response.statusCode(),
-                                        ErrorTypeEnum.GECKO_SERVER_ERROR)))
+        return  configureresponseSpec(urlEndPoint)
                 .bodyToMono(responseType)
+                .doOnSubscribe(subscription -> log.info("Fetch data from CoinGecko service: {}", urlEndPoint))
                 .onErrorResume(this::handleError);
     }
 
-    public <T> Flux<T> getFluxObject(String urlEndpoint, Class<T> responseType) {
+    public <T> Flux<T> getFluxObject(String urlEndPoint, Class<T> responseType) {
+        return configureresponseSpec(urlEndPoint)
+                .bodyToFlux(responseType)
+                .doOnSubscribe(subscription -> log.info("Fetch data from CoinGecko service: {}", urlEndPoint))
+                .onErrorResume(this::handleError);
+    }
+
+    private WebClient.ResponseSpec configureresponseSpec(String urlEnPoint) {
         return webClient.get()
-                .uri(urlEndpoint)
+                .uri(urlEnPoint)
                 .retrieve()
                 .onStatus(
-                        status -> status.is4xxClientError(),
+                        HttpStatusCode::is4xxClientError,
                         response -> response.bodyToMono(Map.class)
                                 .flatMap(errorMessage -> handleResponseError(errorMessage,
                                         (HttpStatus) response.statusCode(),
                                         ErrorTypeEnum.GECKO_CLIENT_ERROR))
                 )
                 .onStatus(
-                        status -> status.is5xxServerError(),
+                        HttpStatusCode::is5xxServerError,
                         response -> response.bodyToMono(Map.class)
                                 .flatMap(errorMessage -> handleResponseError(errorMessage,
                                         (HttpStatus) response.statusCode(),
-                                        ErrorTypeEnum.GECKO_SERVER_ERROR)))
-                .bodyToFlux(responseType)
-                .onErrorResume(this::handleError);
+                                        ErrorTypeEnum.GECKO_SERVER_ERROR)));
     }
 
 }
