@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 
 @Service
 @Slf4j
-public class AssetPlatformService extends CoinGeckoServiceApi {
+public class AssetPlatformService {
 
     @Value("${api.urlAssertPlatform}")
     private String URL_ASSET_PLATFORM;
