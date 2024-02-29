@@ -1,9 +1,9 @@
 package ar.com.api.assetPlatform.services;
 
+import ar.com.api.assetPlatform.configuration.ExternalServerConfig;
 import ar.com.api.assetPlatform.configuration.HttpServiceCall;
 import ar.com.api.assetPlatform.model.AssetPlatform;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -11,20 +11,21 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AssetPlatformService {
 
-    @Value("${api.urlAssertPlatform}")
-    private String URL_ASSET_PLATFORM;
+    private final ExternalServerConfig externalServerConfig;
 
-    private HttpServiceCall httpServiceCall;
+    private final HttpServiceCall httpServiceCall;
 
-    public AssetPlatformService(HttpServiceCall httpServiceCall) {
+    public AssetPlatformService(HttpServiceCall httpServiceCall, ExternalServerConfig serverConfig) {
         this.httpServiceCall = httpServiceCall;
+        this.externalServerConfig = serverConfig;
     }
 
     public Flux<AssetPlatform> getAssetPlatform() {
 
-        log.info("Calling method: getAssetPlatform()", URL_ASSET_PLATFORM);
+        log.info("Calling method: getAssetPlatform(): {}", externalServerConfig.getUrlAssertPlatform());
 
-        return null;
+        return httpServiceCall.getFluxObject(externalServerConfig.getUrlAssertPlatform(),
+                AssetPlatform.class);
     }
 
 }

@@ -53,7 +53,7 @@ class CoinGeckoServiceStatusTest extends Specification {
                     throwable instanceof ApiServerErrorException &&
                             throwable.getErrorType() == ErrorTypeEnum.API_CLIENT_ERROR &&
                             throwable.getHttpStatus().is4xxClientError()
-                })
+                }).verify()
     }
 
     def "CoinGeckoService should handle 5xx client error gracefully"() {
@@ -71,7 +71,7 @@ class CoinGeckoServiceStatusTest extends Specification {
                     throwable instanceof ApiServerErrorException &&
                             throwable.getErrorType() == ErrorTypeEnum.API_SERVER_ERROR &&
                             throwable.getHttpStatus().is5xxServerError()
-                })
+                }).verify()
     }
 
 }
